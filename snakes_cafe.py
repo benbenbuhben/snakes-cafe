@@ -49,7 +49,7 @@ def greeting():
     {'**' + (' ' * ((width - 4 - len(ln_two)) // 2)) + ln_two + (' ' * ((width - 4 - len(ln_two)) // 2)) + '**'}
     {'**' + (' ' * ((width - 4 - len(ln_three)) // 2)) + ln_three + (' ' * ((width - 4 - len(ln_three)) // 2)) + '**'}
     {'**' + (' ' * ((width - 4 - len(ln_four)) // 2)) + ln_four + (' ' * ((width - 4 - len(ln_four)) // 2)) + '**'}
-    {'**' + (' ' * ((width - 4 - len(ln_four_2)) // 2)) + ln_four_2 + (' ' * ((width - 4 - len(ln_four_2)) // 2)) + '**'}
+    {'**' + (' ' * ((width - 4 - len(ln_four_2)) // 2)) + ln_four_2 + (' ' * ((width - 4 - len(ln_four_2)) // 2)) + ' **'}
     {'*' * width}
     \n
     {print_menu(MENU)}
