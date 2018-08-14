@@ -1,19 +1,33 @@
+
 # Snakes Cafe
 
+  
+
 **Author**: Ben Hurst
+
 **Version**: 1.0.0
 
+  
+
 ## Overview
-<!-- Provide a high level overview of what this application is and why you are building it, beyond the fact that it's an assignment for a Code Fellows 401 class. (i.e. What's your problem domain?) -->
+
+Snakes Cafe is a command line utility that mimics the functionality of a point of sale (POS) restaurant system using basic Python tools and libraries.
 
 ## Getting Started
-<!-- What are the steps that a user must take in order to build this app on their own machine and get it running? -->
+To run the program, follow these steps:
+ 1. Clone this repo onto your local.
+ 2. Navigate into the appropriate directory.
+ 3. In the terminal, run ```python3 snakes_cafe.py```
+
+  
 
 ## Architecture
-<!-- Provide a detailed description of the application design. What technologies (languages, libraries, etc) you're using, and any other relevant design information. This is also an area which you can include any visuals; flow charts, example usage gifs, screen captures, etc.-->
+
+This program was written using Python 3.7 along with the ```textwrap``` and ```sys``` libraries. Menu items are stored in nested objects within an array so they can easily be added/modified. Other than that, the architecture is very straightforward. Please have a look at the ```snakes_cafe.py``` in this repo for more info.
+
+  
 
 ## Change Log
-<!-- Use this are to document the iterative changes made to your application as each feature is successfully implemented. Use time stamps. Here's an example:
 
-01-01-2001 4:59pm - Added functionality to add and delete some things.
--->
+08-01-2013 4:40pm - Completed basic functionality
+08-01-2013 8:25pm - Added entry by item number feature
