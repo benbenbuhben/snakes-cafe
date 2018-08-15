@@ -81,8 +81,8 @@ def greeting():
   ln_three = '**'
   ln_four = 'To quit at any time, type "quit"'
   ln_four_2 = 'To see your full order, type "order"'
-  ln_five = '**          What would you like to order?           **'
-  ln_six = '** (Please enter item name, or number next to item) **'
+  ln_five = 'What would you like to order? '
+  ln_six = '(Please enter item name, or number next to item)'
 
   width = max(len(ln_one),len(ln_two),len(ln_three),len(ln_four),len(ln_four_2),len(ln_five),len(ln_six)) + 8
 
@@ -96,10 +96,10 @@ def greeting():
     \r{'*' * width}
     \n
     {print_menu(MENU_FORMATTED,width)}
-    \r{'*' * len(ln_six)}
-    \r{ln_five}
-    \r{ln_six}
-    \r{'*' * len(ln_six)}
+    \r{'*' * width}
+    \r{'**' + (' ' * ((width - 4 - len(ln_five)) // 2)) + ln_five + (' ' * ((width - 4 - len(ln_five)) // 2)) + '**'}
+    \r{'**' + (' ' * ((width - 4 - len(ln_six)) // 2)) + ln_six + (' ' * ((width - 4 - len(ln_six)) // 2)) + '**'}
+    \r{'*' * width}
   '''))
 
 #This function handles user input. Options are quit, order, remove <item>, or simply an item number or name (which adds that item to the order object above)
