@@ -1,23 +1,48 @@
 from textwrap import dedent
 import sys
+import uuid
 
-
+#Simple data structure to add more items/prices
 MENU = [
-  {'Appetizers': {'1': 'Wings','2': 'Cookies','3':'Spring Rolls'}},
-  {'Entrees': {'4':'Salmon','5':'Steak','6':'Meat Tornado','7':'A Literal Garden'}},
-  {'Desserts': {'8':'Ice Cream','9':'Cake','10':'Pie'}},
-  {'Drinks': {'11':'Coffee','12':'Tea','13':'Blood of the Innocent'}},
+  {'Appetizers': [{'Wings':7},{'Cookies':3},{'Spring Rolls':5}]},
+  {'Entrees': [{'Salmon':15},{'Steak':18},{'Meat Tornado':12},{'A Literal Garden':10}]},
+  {'Sides': [{'Fries':3},{'Tots':3},{'Cole Slaw':3},{'Cream Corn':3}]},
+  {'Desserts': [{'Ice Cream':5},{'Cake':6},{'Pie':6}]},
+  {'Drinks': [{'Coffee':3},{'Tea':3},{'Blood of the Innocent':4}]},
 ]
-AVAILABLE_ITEMS = {}
 
-for category in MENU:
+#Formatted menu where each item is displayed along with a number
+MENU_FORMATTED = []
+counter = 1
+for item in MENU:
+  current_category = {}
+  for key,value in item.items():
+    current_category[key]={}
+    for i in value:
+      current_category[key][str(counter)] = i
+      counter += 1
+  MENU_FORMATTED.append(current_category)
+
+#Two dictionaries that list all available items
+#AVAILABLE_ITEMS is in the format: {'1':'Wings', ...}
+#BACKWARDS_MAP is in the format: {'Wings':'1', ...}
+AVAILABLE_ITEMS = {}
+BACKWARDS_MAP = {}
+print(MENU_FORMATTED)
+for category in MENU_FORMATTED:
     for key,value in category.items():
       for key2,value2 in value.items():
-        AVAILABLE_ITEMS[key2]=value2
+        for food,price in value2.items():
+          AVAILABLE_ITEMS[key2]={'item':food,'cost':price}
+          BACKWARDS_MAP[food.lower()]=key2
 
+#Initializing order, which will keep track of items and quantities
 ORDER = {}
 
+#Unique identifier for order
+ORDER_NUMBER = uuid.uuid4()
 
+#Function that prints menu in nice format. This will be called in the greeting() function below
 def print_menu(menu):
   output='\n'
   for category in menu:
@@ -25,11 +50,13 @@ def print_menu(menu):
       output += key + '\n'
       output += f'''{'-' * len(key)}\n'''
       for key2,value2 in value.items():
-          output += key2 + '. ' + value2 + '\n'
+          print(key2,value2)
+          for food, price in value2.items():
+            output += key2 + '. ' + food + '\n'
     output += '\n'
   return output
 
-
+#Welcomes the user, displays menu, and gives basic instructions
 def greeting():
   """Function which will greet user when the application executes for the first time.
   """
@@ -37,94 +64,158 @@ def greeting():
   ln_two = 'Please see our menu below.'
   ln_three = '**'
   ln_four = 'To quit at any time, type "quit"'
-  ln_four_2 = 'To see your full order, type "show"'
-  ln_five = '**   What would you like to order?    **'
-  ln_six = '** (Please enter number next to item) **'
+  ln_four_2 = 'To see your full order, type "order"'
+  ln_five = '**          What would you like to order?           **'
+  ln_six = '** (Please enter item name, or number next to item) **'
 
-  width = max(len(ln_one),len(ln_two),len(ln_three),len(ln_four),len(ln_four_2),len(ln_five)) + 8
+  width = max(len(ln_one),len(ln_two),len(ln_three),len(ln_four),len(ln_four_2),len(ln_five),len(ln_six)) + 8
 
   print(dedent(f'''\n
-    {'*' * width}
-    {'**' + (' ' * ((width - 4 - len(ln_one)) // 2)) + ln_one + (' ' * ((width - 4 - len(ln_one)) // 2)) + '**'}
-    {'**' + (' ' * ((width - 4 - len(ln_two)) // 2)) + ln_two + (' ' * ((width - 4 - len(ln_two)) // 2)) + '**'}
-    {'**' + (' ' * ((width - 4 - len(ln_three)) // 2)) + ln_three + (' ' * ((width - 4 - len(ln_three)) // 2)) + '**'}
-    {'**' + (' ' * ((width - 4 - len(ln_four)) // 2)) + ln_four + (' ' * ((width - 4 - len(ln_four)) // 2)) + '**'}
-    {'**' + (' ' * ((width - 4 - len(ln_four_2)) // 2)) + ln_four_2 + (' ' * ((width - 4 - len(ln_four_2)) // 2)) + ' **'}
-    {'*' * width}
+    \r{'*' * width}
+    \r{'**' + (' ' * ((width - 4 - len(ln_one)) // 2)) + ln_one + (' ' * ((width - 4 - len(ln_one)) // 2)) + '**'}
+    \r{'**' + (' ' * ((width - 4 - len(ln_two)) // 2)) + ln_two + (' ' * ((width - 4 - len(ln_two)) // 2)) + '**'}
+    \r{'**' + (' ' * ((width - 4 - len(ln_three)) // 2)) + ln_three + (' ' * ((width - 4 - len(ln_three)) // 2)) + '**'}
+    \r{'**' + (' ' * ((width - 4 - len(ln_four)) // 2)) + ln_four + (' ' * ((width - 4 - len(ln_four)) // 2)) + '**'}
+    \r{'**' + (' ' * ((width - 4 - len(ln_four_2)) // 2)) + ln_four_2 + (' ' * ((width - 4 - len(ln_four_2)) // 2)) + '**'}
+    \r{'*' * width}
     \n
-    {print_menu(MENU)}
-    {'*' * len(ln_six)}
-    {ln_five}
-    {ln_six}
-    {'*' * len(ln_six)}
+    {print_menu(MENU_FORMATTED)}
+    \r{'*' * len(ln_six)}
+    \r{ln_five}
+    \r{ln_six}
+    \r{'*' * len(ln_six)}
   '''))
 
+#This function handles user input. Options are quit, order, remove <item>, or simply an item number or name (which adds that item to the order object above)
 def check_input(user_in):
   if user_in.lower() == 'quit':
     exit()
     return
   
-  if user_in == 'show':
-    return 'show'
+  if user_in.lower() == 'order':
+    return 'order'
 
-  elif(user_in in AVAILABLE_ITEMS):
+  elif user_in.split(' ')[0].lower() == 'remove' and user_in.split(' ')[1].lower() in (BACKWARDS_MAP or AVAILABLE_ITEMS):
+    item = user_in.split(' ')[1].lower()
+    if item.isnumeric():
+      if ORDER[item] != 0:
+        ORDER[item] -= 1
+        item_cost = AVAILABLE_ITEMS[item]['cost']*-1
+        update_total_cost(item_cost)
+        return f'''removed {item}'''
+    elif item in BACKWARDS_MAP:
+      string_item = BACKWARDS_MAP[item].lower()
+      if ORDER[string_item] != 0:
+        ORDER[string_item] -= 1
+        item_cost = AVAILABLE_ITEMS[string_item]['cost']*-1
+        update_total_cost(item_cost)
+        return f'''removed {item}'''
+    else:
+      print('That item is not in your order!')
+
+  elif(user_in.lower() in AVAILABLE_ITEMS or user_in.lower() in BACKWARDS_MAP):
+    if user_in.lower() in BACKWARDS_MAP:
+      user_in = BACKWARDS_MAP[user_in.lower()]
     if user_in in ORDER:
       ORDER[user_in] += 1
     else:
       ORDER[user_in] = 1
+    # print(AVAILABLE_ITEMS[user_in])
+    item_cost = AVAILABLE_ITEMS[user_in]['cost']
+    update_total_cost(item_cost)
     return user_in
 
   else:
     return 'N/A'
 
+#Function that calculates total cost. This is called in the feedback() function below
+TOTAL_COST = 0
+def update_total_cost(item_cost):
+  global TOTAL_COST
+  TOTAL_COST += item_cost
+  return TOTAL_COST
 
+#Function that provides user feedback based on their input and subsequent processing
 def feedback(status):
-  if status=='N/A':
+  if status=='':
     print(dedent('''
-      Sorry, we don't have that item :(
+      Sorry, I didn't understand. :(
     '''))
 
-  if status=='show':
+  if status=='N/A':
+    print(dedent('''
+      Sorry, we don't have that :(
+    '''))
+
+  if status=='order':
     if not ORDER:
       print(dedent('You haven\'t added any items to your order yet.'))
     else:
       print(dedent('Here\'s your current order:'+ '\n'))
-      for item in ORDER:
-        print(dedent(f'''ITEM: {AVAILABLE_ITEMS[item]}, QUANTITY: {ORDER[item]}      
-          '''))
-    print(dedent('Would you like to add anything to your order? (If so, enter the item number)'))
+      print(format_order())
+  
+  elif status.split(' ')[0]=='removed':
+    print(f'''1 order of {status.split(' ')[1]} removed from your meal.''')
 
   else:
     if ORDER[status]>1:
       print(dedent(f'''
-        ** {ORDER[status]} orders of {AVAILABLE_ITEMS[status]} are now in your meal. **
-
-        Would you like anything else? (If so, enter the item number)       
-        '''))
+        ** {ORDER[status]} orders of {AVAILABLE_ITEMS[status]['item']} are now in your meal. The total cost of your order is ${round(TOTAL_COST,2)} (before tax) **'''))
     else:
       print(dedent(f'''
-        ** {ORDER[status]} order of {AVAILABLE_ITEMS[status]} has been added to your meal. **
+        ** {ORDER[status]} order of {AVAILABLE_ITEMS[status]['item']} has been added to your meal. The total cost of your order is ${round(TOTAL_COST,2)} (before tax) **'''))
 
-        Would you like anything else? (If so, enter the item number)
-        '''))
-    
+  print(dedent(f'''\nWould you like to add anything to your order? If so, enter the item number.\n(To remove an item, type 'remove' followed by the item number or name.)\n(To see your complete order, type 'order'.)\n'''))
+        
   user_input = input('< ')
   status = check_input(user_input)
   feedback(status)
 
+#Function that formats the order nicely when the command 'order' is typed.
+def format_order():
+  ln_one='\rThe Snakes Cafe'
+  ln_two='\r\"Eatability Counts\"'
+  ln_three=f'''\rOrder #{ORDER_NUMBER}'''
+
+  order='\n'
+  for key,value in ORDER.items():
+    current_item = AVAILABLE_ITEMS[key]['item']
+    current_quantity = value
+    item_total = current_quantity * AVAILABLE_ITEMS[key]['cost']
+    if current_quantity>0:
+      order += f'''{current_item} x{current_quantity} {' '*(len(ln_three)-len(current_item)-len(str(current_quantity))-len(str(item_total))-8)} ${item_total}.00\n'''
+
+  output = dedent(f'''
+            \r{'*' * len(ln_three)}
+            {ln_one}
+            {ln_two}
+            {''}
+            {ln_three}
+            \r{'=' * len(ln_three)}
+            {order}
+            \r{'-' * len(ln_three)}
+            \r{'Subtotal'+ (' ' * (len(ln_three)-len('Subtotal')-len(str(TOTAL_COST))-4)) + '$' + str(TOTAL_COST) + '.00'}
+            \r{'Sales Tax' + (' ' * (len(ln_three)-len('Sales Tax')-len(str(round(TOTAL_COST*.101,2))) -1 )) + '$' + str(round(TOTAL_COST*.101,2))}
+            \r{'-'*len('Sales Tax')}
+            \r{'Total Due' + (' ' * (len(ln_three)-len('Total Due')-len(str(round(TOTAL_COST*.101,2))) -2 )) + '$' + str(round(TOTAL_COST*1.101,2))}
+            \r{'*' * len(ln_three)}
+        ''')
+
+  return output
+
+#Function that escapes from the program  
 def exit():
   print(dedent('''
     Thanks for coming in!
   '''))
   sys.exit()
 
-
+#Function that initializes the script
 def run():
     greeting()
     user_input = input('< ')
     status = check_input(user_input)
     feedback(status)
       
-
 if __name__=='__main__':
   run()
