@@ -29,6 +29,10 @@ This program was written using Python 3.7 along with the ```textwrap``` and ```s
 
 ## Change Log
 
-08-01-2013 4:40pm - Completed basic functionality
+08-13-2018 4:40pm - Completed basic functionality
 
-08-01-2013 8:25pm - Added entry by item number feature
+08-13-2018 8:25pm - Added entry by item number feature
+
+08-14-2018 9:00pm - Added itemized order print out and remove item functionality
+
+
