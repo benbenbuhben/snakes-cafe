@@ -23,12 +23,16 @@ for item in MENU:
       counter += 1
   MENU_FORMATTED.append(current_category)
 
+CATEGORIES = set()
+for i in MENU:
+  for key,value in i.items():
+    CATEGORIES.add(key.lower())
+
 #Two dictionaries that list all available items
 #AVAILABLE_ITEMS is in the format: {'1':'Wings', ...}
 #BACKWARDS_MAP is in the format: {'Wings':'1', ...}
 AVAILABLE_ITEMS = {}
 BACKWARDS_MAP = {}
-print(MENU_FORMATTED)
 for category in MENU_FORMATTED:
     for key,value in category.items():
       for key2,value2 in value.items():
@@ -36,24 +40,36 @@ for category in MENU_FORMATTED:
           AVAILABLE_ITEMS[key2]={'item':food,'cost':price}
           BACKWARDS_MAP[food.lower()]=key2
 
-#Initializing order, which will keep track of items and quantities
+#Initializing ORDER, which will keep track of items and quantities
 ORDER = {}
 
 #Unique identifier for order
 ORDER_NUMBER = uuid.uuid4()
 
 #Function that prints menu in nice format. This will be called in the greeting() function below
-def print_menu(menu):
+def print_menu(menu,width):
   output='\n'
   for category in menu:
     for key,value in category.items():
       output += key + '\n'
       output += f'''{'-' * len(key)}\n'''
       for key2,value2 in value.items():
-          print(key2,value2)
           for food, price in value2.items():
-            output += key2 + '. ' + food + '\n'
+            output += key2 + '. ' + food + ('.'*(width-len(str(key2))-2-len(food)-len('${:,.2f}'.format(price)))) + '${:,.2f}'.format(price) + '\n'
     output += '\n'
+  return output
+
+def print_category(menu,selected_category,width):
+  output='\n'
+  for category in menu:
+    for key,value in category.items():
+      if key.lower()==selected_category:
+        output += key + '\n'
+        output += f'''{'-' * len(key)}\n'''
+        for key2,value2 in value.items():
+          for food, price in value2.items():
+            output += key2 + '. ' + food + ('.'*(width-len(str(key2))-2-len(food)-len('${:,.2f}'.format(price)))) + '${:,.2f}'.format(price) + '\n'
+      output += '\n'
   return output
 
 #Welcomes the user, displays menu, and gives basic instructions
@@ -79,7 +95,7 @@ def greeting():
     \r{'**' + (' ' * ((width - 4 - len(ln_four_2)) // 2)) + ln_four_2 + (' ' * ((width - 4 - len(ln_four_2)) // 2)) + '**'}
     \r{'*' * width}
     \n
-    {print_menu(MENU_FORMATTED)}
+    {print_menu(MENU_FORMATTED,width)}
     \r{'*' * len(ln_six)}
     \r{ln_five}
     \r{ln_six}
@@ -94,6 +110,12 @@ def check_input(user_in):
   
   if user_in.lower() == 'order':
     return 'order'
+
+  if user_in.lower() == 'menu':
+    return 'menu'
+
+  if user_in.lower() in CATEGORIES:
+    return 'category ' + user_in.lower()
 
   elif user_in.split(' ')[0].lower() == 'remove' and user_in.split(' ')[1].lower() in (BACKWARDS_MAP or AVAILABLE_ITEMS):
     item = user_in.split(' ')[1].lower()
@@ -137,27 +159,28 @@ def update_total_cost(item_cost):
 
 #Function that provides user feedback based on their input and subsequent processing
 def feedback(status):
-  if status=='':
+  if status=='' or status=='N/A':
     print(dedent('''
       Sorry, I didn't understand. :(
     '''))
 
-  if status=='N/A':
-    print(dedent('''
-      Sorry, we don't have that :(
-    '''))
-
-  if status=='order':
+  elif status=='order':
     if not ORDER:
       print(dedent('You haven\'t added any items to your order yet.'))
     else:
       print(dedent('Here\'s your current order:'+ '\n'))
       print(format_order())
   
+  elif status=='menu':
+    print(print_menu(MENU_FORMATTED,54))
+  
+  elif status.split(' ')[0]=='category':
+    print(print_category(MENU_FORMATTED,status.split(' ')[1],54))
+
   elif status.split(' ')[0]=='removed':
     print(f'''1 order of {status.split(' ')[1]} removed from your meal.''')
 
-  else:
+  elif status!='N/A':
     if ORDER[status]>1:
       print(dedent(f'''
         ** {ORDER[status]} orders of {AVAILABLE_ITEMS[status]['item']} are now in your meal. The total cost of your order is ${round(TOTAL_COST,2)} (before tax) **'''))
@@ -183,7 +206,7 @@ def format_order():
     current_quantity = value
     item_total = current_quantity * AVAILABLE_ITEMS[key]['cost']
     if current_quantity>0:
-      order += f'''{current_item} x{current_quantity} {' '*(len(ln_three)-len(current_item)-len(str(current_quantity))-len(str(item_total))-8)} ${item_total}.00\n'''
+      order += f'''{current_item} x{current_quantity} {' '*(len(ln_three)-len(current_item)-len(str(current_quantity))-len(str(item_total))-8)} {'${:,.2f}'.format(item_total)}\n'''
 
   output = dedent(f'''
             \r{'*' * len(ln_three)}
@@ -194,10 +217,10 @@ def format_order():
             \r{'=' * len(ln_three)}
             {order}
             \r{'-' * len(ln_three)}
-            \r{'Subtotal'+ (' ' * (len(ln_three)-len('Subtotal')-len(str(TOTAL_COST))-4)) + '$' + str(TOTAL_COST) + '.00'}
-            \r{'Sales Tax' + (' ' * (len(ln_three)-len('Sales Tax')-len(str(round(TOTAL_COST*.101,2))) -1 )) + '$' + str(round(TOTAL_COST*.101,2))}
+            \r{'Subtotal'+ (' ' * (len(ln_three)-len('Subtotal')-len('${:,.2f}'.format(TOTAL_COST)))) + '${:,.2f}'.format(TOTAL_COST)}
+            \r{'Sales Tax' + (' ' * (len(ln_three)-len('Sales Tax')-len('${:,.2f}'.format(TOTAL_COST*.101)))) + '${:,.2f}'.format((TOTAL_COST*.101))}
             \r{'-'*len('Sales Tax')}
-            \r{'Total Due' + (' ' * (len(ln_three)-len('Total Due')-len(str(round(TOTAL_COST*.101,2))) -2 )) + '$' + str(round(TOTAL_COST*1.101,2))}
+            \r{'Total Due' + (' ' * (len(ln_three)-len('Total Due')-len('${:,.2f}'.format(TOTAL_COST*1.101)))) + '${:,.2f}'.format((TOTAL_COST*1.101))}
             \r{'*' * len(ln_three)}
         ''')
 
