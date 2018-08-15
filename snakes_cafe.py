@@ -23,6 +23,7 @@ for item in MENU:
       counter += 1
   MENU_FORMATTED.append(current_category)
 
+#Unique set to hold each category for print_category() function below
 CATEGORIES = set()
 for i in MENU:
   for key,value in i.items():
@@ -72,7 +73,8 @@ def print_category(menu,selected_category,width):
       output += '\n'
   return output
 
-#Welcomes the user, displays menu, and gives basic instructions
+#Welcomes the user, displays menu, and gives basic instructions.
+#NOTE: Consider refactoring into an array to hold the strings and then a for loop to display everything.
 def greeting():
   """Function which will greet user when the application executes for the first time.
   """
@@ -108,13 +110,13 @@ def check_input(user_in):
     exit()
     return
   
-  if user_in.lower() == 'order':
+  elif user_in.lower() == 'order':
     return 'order'
 
-  if user_in.lower() == 'menu':
+  elif user_in.lower() == 'menu':
     return 'menu'
 
-  if user_in.lower() in CATEGORIES:
+  elif user_in.lower() in CATEGORIES:
     return 'category ' + user_in.lower()
 
   elif user_in.split(' ')[0].lower() == 'remove' and user_in.split(' ')[1].lower() in (BACKWARDS_MAP or AVAILABLE_ITEMS):
