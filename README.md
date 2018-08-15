@@ -5,7 +5,7 @@
 
 **Author**: Ben Hurst
 
-**Version**: 1.0.0
+**Version**: 1.0.1
 
   
 
@@ -23,7 +23,7 @@ To run the program, follow these steps:
 
 ## Architecture
 
-This program was written using Python 3.7 along with the ```textwrap``` and ```sys``` libraries. Menu items are stored in nested objects within an array so they can easily be added/modified. Other than that, the architecture is very straightforward. Please have a look at the ```snakes_cafe.py``` in this repo for more info.
+This program was written using Python 3.7 along with the ```textwrap```, ```sys```, and ```uuid``` libraries. Menu items are stored in nested objects within an array so they can easily be added/modified. Other than that, the architecture is very straightforward. Please have a look at the ```snakes_cafe.py``` in this repo for more info.
 
   
 
@@ -32,3 +32,5 @@ This program was written using Python 3.7 along with the ```textwrap``` and ```s
 08-01-2013 4:40pm - Completed basic functionality
 
 08-01-2013 8:25pm - Added entry by item number feature
+
+08-14-2018 9:00pm - Added itemized order print out and remove item functionality

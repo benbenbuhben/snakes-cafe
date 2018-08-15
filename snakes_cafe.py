@@ -1,6 +1,6 @@
 from textwrap import dedent
 import sys
-import uuid
+from uuid import uuid4
 
 #Simple data structure to add more items/prices
 MENU = [
@@ -29,7 +29,7 @@ for i in MENU:
   for key,value in i.items():
     CATEGORIES.add(key.lower())
 
-#Two dictionaries that list all available items
+#Two dictionaries that list all available items for ease of access
 #AVAILABLE_ITEMS is in the format: {'1':'Wings', ...}
 #BACKWARDS_MAP is in the format: {'Wings':'1', ...}
 AVAILABLE_ITEMS = {}
@@ -45,7 +45,7 @@ for category in MENU_FORMATTED:
 ORDER = {}
 
 #Unique identifier for order
-ORDER_NUMBER = uuid.uuid4()
+ORDER_NUMBER = uuid4()
 
 #Function that prints menu in nice format. This will be called in the greeting() function below
 def print_menu(menu,width):
