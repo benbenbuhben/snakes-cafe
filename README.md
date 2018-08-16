@@ -26,7 +26,6 @@ To run the program, follow these steps:
 This program was written using Python 3.7 along with the ```textwrap```, ```sys```, and ```uuid``` libraries. Menu items are stored in nested objects within an array so they can easily be added/modified. Other than that, the architecture is very straightforward. Please have a look at the ```snakes_cafe.py``` in this repo for more info.
 
   
-
 ## Change Log
 
 08-01-2013 4:40pm - Completed basic functionality
@@ -34,3 +33,5 @@ This program was written using Python 3.7 along with the ```textwrap```, ```sys`
 08-01-2013 8:25pm - Added entry by item number feature
 
 08-14-2018 9:00pm - Added itemized order print out and remove item functionality
+
+08-15-2018 10:12pm - New feature to load custom menu in .csv format. Also, user now has option to add a specified quantity to each item ordered, which will be checked against inventory.
