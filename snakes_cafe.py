@@ -5,19 +5,6 @@ from uuid import uuid4
 #TESTS
 #For each function... valid case, invalid case, edge case
 
-def determine_menu(menu_type):
-  if menu_type == 'default':
-    MENU = [
-      {'Appetizers': [{'Wings':7},{'Cookies':3},{'Spring Rolls':5},{'Rocky Mtn Oysters':8},{'Awesome Blossom Possom':10}]},
-      {'Entrees': [{'Salmon':15},{'Steak':18},{'Meat Tornado':12},{'A Literal Garden':10},{'Vegan Mush':11},{'Chicken':11},{'Deep-Fried Filet Mignon':20}]},
-      {'Sides': [{'Fries':3},{'Tots':3},{'Cole Slaw':3},{'Cream Corn':3},{'Collard Greens':5},{'Corn Bread':4},{'Buttered Beans':6}]},
-      {'Desserts': [{'Ice Cream':5},{'Cake':6},{'Pie':6},{'Salmon Cookie':4}]},
-      {'Drinks': [{'Coffee':3},{'Tea':3},{'Blood of the Innocent':4},{'Beer':4},{'Irish Coffee':5},{'Purple Drank':3}]},
-    ]
-  else:
-    MENU = menu_type
-  return MENU
-
 def format_menu(menu):
   """Formatted menu where each item is displayed along with a number"""
   MENU_FORMATTED = []
@@ -225,7 +212,6 @@ def check_input(user_in,more_arguments):
   else:
     return 'N/A'
 
-
 TOTAL_COST = 0
 def update_total_cost(item_cost):
   """Function that calculates total cost. This is called in the feedback() function below"""
@@ -341,10 +327,15 @@ def run():
   {'2: Custom'}'''))
   initial_input = input('< ')
   if initial_input == '2':
-    custom_menu = load_menu()
-    MENU = determine_menu(custom_menu)
+    MENU = load_menu()
   else:
-    MENU = determine_menu('default')
+    MENU = [
+      {'Appetizers': [{'Wings':7},{'Cookies':3},{'Spring Rolls':5},{'Rocky Mtn Oysters':8},{'Awesome Blossom Possom':10}]},
+      {'Entrees': [{'Salmon':15},{'Steak':18},{'Meat Tornado':12},{'A Literal Garden':10},{'Vegan Mush':11},{'Chicken':11},{'Deep-Fried Filet Mignon':20}]},
+      {'Sides': [{'Fries':3},{'Tots':3},{'Cole Slaw':3},{'Cream Corn':3},{'Collard Greens':5},{'Corn Bread':4},{'Buttered Beans':6}]},
+      {'Desserts': [{'Ice Cream':5},{'Cake':6},{'Pie':6},{'Salmon Cookie':4}]},
+      {'Drinks': [{'Coffee':3},{'Tea':3},{'Blood of the Innocent':4},{'Beer':4},{'Irish Coffee':5},{'Purple Drank':3}]},
+    ]
 
   MENU_FORMATTED = format_menu(MENU)
   CATEGORIES = load_categories(MENU)
