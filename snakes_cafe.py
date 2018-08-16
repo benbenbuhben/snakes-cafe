@@ -157,13 +157,23 @@ def check_input(user_in,more_arguments):
   BACKWARDS_MAP = more_arguments[2]
   input1 = user_in.split(' ')[0].lower()
   increment = 1
-  if(len(user_in.split(' '))>1):
-    input2 = user_in.split(' ')[1].lower()
-    if not input2.isnumeric() or (input2.isnumeric() and int(input2)<1):
-      print('Invalid quantity!')
-      return 'N/A'
+  input_array = user_in.split(' ')
+
+  if input1=='remove':
+    input2 = ' '.join(input_array[1:])
+
+  if(len(input_array)>1) and input1!='remove':
+    if(input_array[len(input_array)-1].isnumeric()):
+      input1 = ' '.join(input_array[:len(input_array)-1])
+      input2 = input_array[len(input_array)-1]
+      if int(input2)<1:
+        print('Invalid quantity!')
+        return 'N/A'
+      else:
+        increment = int(input2)
     else:
-      increment = int(input2)
+      input1 = ' '.join(input_array)
+ 
   if user_in.lower() == 'quit':
     exit()
     return
