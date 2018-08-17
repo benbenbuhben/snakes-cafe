@@ -1,6 +1,7 @@
 from textwrap import dedent
 import sys
 from uuid import uuid4
+from classes.order_class import Order
 
 #TESTS
 #For each function... valid case, invalid case, edge case
@@ -46,10 +47,7 @@ def create_lookup(menu_formatted):
   return [AVAILABLE_ITEMS,BACKWARDS_MAP]
 
 #Initializing ORDER, which will keep track of items and quantities
-ORDER = {}
-
-#Unique identifier for order
-ORDER_NUMBER = uuid4()
+ORDER={}
 
 def menu_from_csv(custom_menu):
   arr = custom_menu.split('\n')[1:]
@@ -161,7 +159,7 @@ def check_input(user_in,more_arguments):
     else:
       input1 = ' '.join(input_array)
  
-  if user_in.lower() == 'quit':
+  if user_in.lower() == ('quit' or 'exit'):
     exit()
     return
   
@@ -174,21 +172,14 @@ def check_input(user_in,more_arguments):
   elif user_in.lower() in CATEGORIES:
     return 'category ' + user_in.lower()
 
-  elif input1 == 'remove' and input2 in (BACKWARDS_MAP or AVAILABLE_ITEMS):
-    item = input2
-    if item.isnumeric():
-      if ORDER[item] != 0:
-        ORDER[item] -= 1
-        item_cost = AVAILABLE_ITEMS[item]['cost']*-1
-        update_total_cost(item_cost)
-        return f'''removed {item}'''
-    elif item in BACKWARDS_MAP:
-      string_item = BACKWARDS_MAP[item].lower()
-      if ORDER[string_item] != 0:
-        ORDER[string_item] -= 1
-        item_cost = AVAILABLE_ITEMS[string_item]['cost']*-1
-        update_total_cost(item_cost)
-        return f'''removed {item}'''
+  elif input1 == 'remove':
+    if input2 in (BACKWARDS_MAP or AVAILABLE_ITEMS):
+      item = input2
+      if not item.isnumeric():
+        item = BACKWARDS_MAP[item].lower()
+      item_cost = AVAILABLE_ITEMS[item]['cost']*-1
+      removed_item = ORDER.remove_item(item, item_cost)
+      return f'''removed {AVAILABLE_ITEMS[removed_item]['item']}'''
     else:
       print('That item is not in your order!')
 
@@ -199,41 +190,30 @@ def check_input(user_in,more_arguments):
       print(dedent(f'''Sorry, we only have {AVAILABLE_ITEMS[input1]['quantity']} {AVAILABLE_ITEMS[input1]['item']} left.'''))
       return 'N/A'
     else:
-      if input1 in ORDER:
-        ORDER[input1] += increment
-        AVAILABLE_ITEMS[input1]['quantity'] -= increment
-      else:
-        ORDER[input1] = increment
-        AVAILABLE_ITEMS[input1]['quantity'] -= increment
-      item_cost = AVAILABLE_ITEMS[input1]['cost']
-      update_total_cost(item_cost)
+      ORDER.add_item(input1,increment)
+      AVAILABLE_ITEMS[input1]['quantity'] -= increment
+      item_cost = AVAILABLE_ITEMS[input1]['cost'] * increment
+      ORDER.update_total(item_cost)
       return input1
 
   else:
     return 'N/A'
 
-TOTAL_COST = 0
-def update_total_cost(item_cost):
-  """Function that calculates total cost. This is called in the feedback() function below"""
-  global TOTAL_COST
-  TOTAL_COST += item_cost
-  return TOTAL_COST
-
 def feedback(status,menu_formatted,more_arguments):
   """Function that provides user feedback based on their input and subsequent processing"""
   AVAILABLE_ITEMS = more_arguments[1]
 
-  if status=='' or status=='N/A':
+  if status=='' or status=='N/A' or not status:
     print(dedent('''
       Sorry, I didn't understand. :(
     '''))
 
   elif status=='order':
-    if not ORDER:
+    if not ORDER.total:
       print(dedent('You haven\'t added any items to your order yet.'))
     else:
       print(dedent('Here\'s your current order:'+ '\n'))
-      print(format_order(AVAILABLE_ITEMS))
+      print(ORDER)
   
   elif status=='menu':
     print(print_menu(menu_formatted,54))
@@ -245,50 +225,18 @@ def feedback(status,menu_formatted,more_arguments):
     print(f'''1 order of {status.split(' ')[1]} removed from your meal.''')
 
   elif status!='N/A':
-    if ORDER[status]>1:
+    if ORDER.map[status]>1:
       print(dedent(f'''
-        ** {ORDER[status]} orders of {AVAILABLE_ITEMS[status]['item']} are now in your meal. The total cost of your order is ${round(TOTAL_COST,2)} (before tax) **'''))
+        ** {ORDER.map[status]} orders of {AVAILABLE_ITEMS[status]['item']} are now in your meal. The total cost of your order is ${round(ORDER.total,2)} (before tax) **'''))
     else:
       print(dedent(f'''
-        ** {ORDER[status]} order of {AVAILABLE_ITEMS[status]['item']} has been added to your meal. The total cost of your order is ${round(TOTAL_COST,2)} (before tax) **'''))
+        ** {ORDER.map[status]} order of {AVAILABLE_ITEMS[status]['item']} has been added to your meal. The total cost of your order is ${round(ORDER.total,2)} (before tax) **'''))
 
   print(dedent(f'''\nWould you like to add anything to your order? If so, enter the item number.\n(To remove an item, type 'remove' followed by the item number or name.)\n(To see your complete order, type 'order'.)\n'''))
         
   user_input = input('< ')
   status = check_input(user_input,more_arguments)
   feedback(status,menu_formatted,more_arguments)
-
-def format_order(available_items):
-  """Function that formats the order nicely when the command 'order' is typed."""
-  ln_one='\rThe Snakes Cafe'
-  ln_two='\r\"Eatability Counts\"'
-  ln_three=f'''\rOrder #{ORDER_NUMBER}'''
-
-  order='\n'
-  for key,value in ORDER.items():
-    current_item = available_items[key]['item']
-    current_quantity = value
-    item_total = current_quantity * available_items[key]['cost']
-    if current_quantity>0:
-      order += f'''{current_item} x{current_quantity} {' '*(len(ln_three)-len(current_item)-len(str(current_quantity))-len(str(item_total))-8)} {'${:,.2f}'.format(item_total)}\n'''
-
-  output = dedent(f'''
-            \r{'*' * len(ln_three)}
-            {ln_one}
-            {ln_two}
-            {''}
-            {ln_three}
-            \r{'=' * len(ln_three)}
-            {order}
-            \r{'-' * len(ln_three)}
-            \r{'Subtotal'+ (' ' * (len(ln_three)-len('Subtotal')-len('${:,.2f}'.format(TOTAL_COST)))) + '${:,.2f}'.format(TOTAL_COST)}
-            \r{'Sales Tax' + (' ' * (len(ln_three)-len('Sales Tax')-len('${:,.2f}'.format(TOTAL_COST*.101)))) + '${:,.2f}'.format((TOTAL_COST*.101))}
-            \r{'-'*len('Sales Tax')}
-            \r{'Total Due' + (' ' * (len(ln_three)-len('Total Due')-len('${:,.2f}'.format(TOTAL_COST*1.101)))) + '${:,.2f}'.format((TOTAL_COST*1.101))}
-            \r{'*' * len(ln_three)}
-        ''')
-
-  return output
  
 def exit():
   """Function that escapes from the program """
@@ -316,7 +264,6 @@ def load_menu():
     except FileNotFoundError:
       print('BAD FILE PATH!!!!!11!!1!')
       return load_menu()
-    
 
 def run():
   """Function that initializes the script"""
@@ -341,6 +288,8 @@ def run():
   CATEGORIES = load_categories(MENU)
   AVAILABLE_ITEMS = create_lookup(MENU_FORMATTED)[0]
   BACKWARDS_MAP = create_lookup(MENU_FORMATTED)[1]
+  global ORDER
+  ORDER = Order(AVAILABLE_ITEMS)
   argument_package = [CATEGORIES,AVAILABLE_ITEMS,BACKWARDS_MAP]
   greeting(MENU_FORMATTED)
   user_input = input('< ')
