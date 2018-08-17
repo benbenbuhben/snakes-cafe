@@ -163,11 +163,8 @@ def check_input(user_in,more_arguments):
     exit()
     return
   
-  elif user_in.lower() == 'order':
-    return 'order'
-
-  elif user_in.lower() == 'menu':
-    return 'menu'
+  elif user_in.lower() == 'order' or user_in.lower() == 'menu' or user_in.lower() == 'print':
+    return user_in.lower()
 
   elif user_in.lower() in CATEGORIES:
     return 'category ' + user_in.lower()
@@ -184,6 +181,7 @@ def check_input(user_in,more_arguments):
       print('That item is not in your order!')
 
   elif(input1 in AVAILABLE_ITEMS or input1 in BACKWARDS_MAP):
+    
     if input1 in BACKWARDS_MAP:
       input1 = BACKWARDS_MAP[input1]
     if (AVAILABLE_ITEMS[input1]['quantity']-increment)<=0:
@@ -217,6 +215,10 @@ def feedback(status,menu_formatted,more_arguments):
   
   elif status=='menu':
     print(print_menu(menu_formatted,54))
+
+  elif status=='print':
+    ORDER.print_receipt()
+    print('Saved receipt to ./assets/ folder!')
   
   elif status.split(' ')[0]=='category':
     print(print_category(menu_formatted,status.split(' ')[1],54))

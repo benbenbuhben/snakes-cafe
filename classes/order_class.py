@@ -33,6 +33,7 @@ class Order(object):
     ln_one='\rThe Snakes Cafe'
     ln_two='\r\"Eatability Counts\"'
     ln_three=f'''\rOrder #{self.id}'''
+    ln_four='Type "print" to save your receipt as a .txt'
 
     order='\n'
     for key,value in self.map.items():
@@ -56,6 +57,8 @@ class Order(object):
               \r{'-'*len('Sales Tax')}
               \r{'Total Due' + (' ' * (len(ln_three)-len('Total Due')-len('${:,.2f}'.format(self.total*1.101)))) + '${:,.2f}'.format((self.total*1.101))}
               \r{'*' * len(ln_three)}
+              \r{ln_four + (' ' * ( len(ln_three) - len(ln_four) ) )}
+              \r{'*' * len(ln_three)}
           ''')
     self.text = output
 
@@ -67,7 +70,7 @@ class Order(object):
   def print_receipt(self):
     filename = f'''order-{self.id}.txt'''
     text = self.display_order()
-    f = open(f'''./{filename}''', "w")
+    f = open(f'''./assets/{filename}''', "w")
     f.write(text)
 
   def __repr__(self):
