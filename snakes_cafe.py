@@ -7,7 +7,8 @@ from classes.order_class import Order
 #For each function... valid case, invalid case, edge case
 
 def format_menu(menu):
-  """Formatted menu where each item is displayed along with a number"""
+  """Formatted menu where each item is displayed along with a number
+  """
   MENU_FORMATTED = []
   counter = 1
   for item in menu:
@@ -21,7 +22,8 @@ def format_menu(menu):
   return MENU_FORMATTED
 
 def load_categories(menu):
-  """Unique set to hold each category for print_category() function below"""
+  """Unique set to hold each category for print_category() function below
+  """
   CATEGORIES = set()
   for i in menu:
     for key,value in i.items():
@@ -32,7 +34,8 @@ QUANTITIES = []
 def create_lookup(menu_formatted):
   """Two dictionaries that list all available items for ease of access.
   AVAILABLE_ITEMS is in the format: {'1':'Wings', ...}
-  BACKWARDS_MAP is in the format: {'Wings':'1', ...}"""
+  BACKWARDS_MAP is in the format: {'Wings':'1', ...}
+  """
   AVAILABLE_ITEMS = {}
   BACKWARDS_MAP = {}
   for category in menu_formatted:
@@ -50,6 +53,8 @@ def create_lookup(menu_formatted):
 ORDER={}
 
 def menu_from_csv(custom_menu):
+  """Function that converts csv format to the desired menu format
+  """
   arr = custom_menu.split('\n')[1:]
   newArr = []
   
@@ -81,7 +86,8 @@ def menu_from_csv(custom_menu):
   return finalArr
 
 def print_menu(menu,width):
-  """Function that prints menu in nice format. This will be called in the greeting() function below"""
+  """Function that prints menu in nice format. This will be called in the greeting() function below
+  """
   output='\n'
   for category in menu:
     for key,value in category.items():
@@ -218,7 +224,7 @@ def feedback(status,menu_formatted,more_arguments):
 
   elif status=='print':
     ORDER.print_receipt()
-    print('Saved receipt to ./assets/ folder!')
+    print('Saved receipt to ./assets/receipts/ folder!')
   
   elif status.split(' ')[0]=='category':
     print(print_category(menu_formatted,status.split(' ')[1],54))

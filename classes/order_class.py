@@ -70,8 +70,8 @@ class Order(object):
   def print_receipt(self):
     filename = f'''order-{self.id}.txt'''
     text = self.display_order()
-    f = open(f'''./assets/{filename}''', "w")
-    f.write(text)
+    with open(f'''./assets/receipts/{filename}''', "w") as f:
+        f.write(text)
 
   def __repr__(self):
     num_items = 0
