@@ -40,3 +40,4 @@ This program was written using Python 3.7 along with the ```textwrap```, ```sys`
 08-16-2018 10:35pm - Created Class constructor for the Order class. Refactored code accordingly. This class has methods that do everything the code did before, but also a new one that can write a file containing the receipt text.
 
 08-19-2018 11:02pm - Incorporated write functionality as option in UI. Added 23 tests.
+
