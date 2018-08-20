@@ -1,0 +1,21 @@
+
+              ********************************************
+              The Snakes Cafe
+              "Eatability Counts"
+
+              Order #aa256f59-8d61-414a-bc36-362087bc8953
+              ============================================
+
+Cookies x1                             $3.00
+Spring Rolls x2                       $10.00
+Rocky Mtn Oysters x2                  $16.00
+Awesome Blossom Possom x1             $10.00
+
+              --------------------------------------------
+              Subtotal                              $39.00
+              Sales Tax                              $3.94
+              ---------
+              Total Due                             $42.94
+              ********************************************
+              Type "print" to save your receipt as a .txt 
+              ********************************************
